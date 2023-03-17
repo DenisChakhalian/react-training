@@ -1,0 +1,15 @@
+.info {
+    border: 2px solid gray;
+    border-radius: 50px;
+    max-width: 40%;
+    padding: 15px;
+    margin: 15px auto;
+}
+
+.myOtherButton {
+    background-color: indigo;
+}
+
+h2{
+    color: seagreen;
+}
