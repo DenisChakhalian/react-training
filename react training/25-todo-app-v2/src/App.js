@@ -10,42 +10,71 @@ import TodosActions from "./components/Todos/TodosActions";
 function App() {
     const [todos, setTodos] = useState([]);
 
+    const parseData = (data) => {
+        try {
+            return JSON.parse(data)
+        } catch (e) {
+            console.log(e.message)
+        }
+    }
+
+    if (!todos?.length && localStorage.getItem("todos")) {
+        const todosLocal = localStorage.getItem("todos");
+        setTodos(parseData(todosLocal));
+    }
+
     const addTodoHandler = (text) => {
         const newTodo = {
             text,
             isCompleted: false,
             id: uuidv4()
         }
+        localStorage.setItem("todos", JSON.stringify([...todos, newTodo]));
         setTodos([...todos, newTodo]);
     }
 
     const deleteTodo = (id) => {
-        setTodos(todos.filter((todo) => todo.id !== id));
+        const newTodos = todos?.filter((todo) => todo.id !== id);
+        setTodos(newTodos);
+        if (!newTodos.length) {
+            localStorage.clear();
+        } else {
+            localStorage.setItem("todos", JSON.stringify(newTodos));
+        }
     }
 
     const deleteTodos = () => {
         setTodos([]);
+        localStorage.clear();
     }
 
     const deleteCompletedTodos = () => {
-        setTodos(todos.filter((todo) => !todo.isCompleted));
+        const newTodos = todos.filter((todo) => !todo.isCompleted);
+        setTodos(newTodos);
+        if (!newTodos.length) {
+            localStorage.clear();
+        } else {
+            localStorage.setItem("todos", JSON.stringify(newTodos));
+        }
     }
 
     const completeTodo = (id) => {
-        setTodos(todos.map((todo) => todo.id === id
+        const newTodos = todos.map((todo) => todo.id === id
             ? {...todo, isCompleted: !todo.isCompleted}
             : {...todo}
-        ));
+        );
+        setTodos(newTodos);
+        localStorage.setItem("todos", JSON.stringify(newTodos));
     }
 
-    const completedTodosCount = todos.filter((todo) => todo.isCompleted).length;
+    const completedTodosCount = todos?.filter((todo) => todo.isCompleted).length;
 
     return (
         <div className="App">
             <h1>Todo App</h1>
             <TodoForm addTodo={addTodoHandler}/>
             {
-                !!todos.length &&
+                !!todos?.length &&
                 <TodosActions completedTodosExist={!!completedTodosCount} deleteTodos={deleteTodos}
                               deleteCompletedTodos={deleteCompletedTodos}/>
             }
